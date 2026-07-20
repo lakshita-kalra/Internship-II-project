@@ -1,0 +1,103 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { Sparkles, TrendingUp, Users, Award, Target, Lightbulb, Zap } from "lucide-react";
+import { GradientAvatar } from "@/components/smarthire/Avatar";
+import { StatusBadge } from "@/components/smarthire/StatusBadge";
+import { Progress } from "@/components/ui/progress";
+import { candidates } from "@/data/mock";
+
+export const Route = createFileRoute("/_app/ai-insights")({
+  component: AIInsights,
+  head: () => ({ meta: [{ title: "AI Insights — SmartHire" }] }),
+});
+
+function AIInsights() {
+  const top = [...candidates].sort((a, b) => b.aiScore - a.aiScore).slice(0, 5);
+  const insights = [
+    { icon: TrendingUp, tone: "emerald", title: "Engineering hiring is +34% this month", body: "Consider expanding capacity by adding 2 more technical interviewers." },
+    { icon: Users, tone: "sky", title: "Referrals convert 2.3× faster", body: "Encourage employee referral program participation this quarter." },
+    { icon: Award, tone: "amber", title: "3 candidates match the Senior React role at 90%+", body: "Review Aarav Sharma, Vivek Patel, and Sneha Kapoor first." },
+    { icon: Zap, tone: "violet", title: "Time-to-hire down by 4.2 days", body: "Streamlined screening workflow is paying off — keep it up." },
+  ];
+
+  return (
+    <div className="mx-auto max-w-7xl space-y-6">
+      <div className="card-elevated relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary-soft via-accent/40 to-transparent" />
+        <div className="relative flex items-center gap-4 p-6 sm:p-8">
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl gradient-primary shadow-lg">
+            <Sparkles className="h-7 w-7 text-white" />
+          </div>
+          <div>
+            <h1 className="font-display text-2xl font-bold tracking-tight sm:text-3xl">AI Insights</h1>
+            <p className="mt-1 text-sm text-muted-foreground">Smart recommendations from your hiring data.</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2">
+        {insights.map((i, idx) => (
+          <div key={idx} className="card-elevated flex gap-4 p-5">
+            <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-${i.tone}-100 text-${i.tone}-700 dark:bg-${i.tone}-950/40 dark:text-${i.tone}-300`}>
+              <i.icon className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="font-display text-base font-bold">{i.title}</p>
+              <p className="mt-1 text-sm text-muted-foreground">{i.body}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-3">
+        <div className="card-elevated p-5 lg:col-span-2">
+          <div className="mb-4 flex items-center justify-between">
+            <div>
+              <h2 className="font-display text-base font-bold">Top AI-Matched Candidates</h2>
+              <p className="text-xs text-muted-foreground">Ranked by overall match score</p>
+            </div>
+            <Target className="h-5 w-5 text-primary" />
+          </div>
+          <ul className="space-y-3">
+            {top.map((c, idx) => (
+              <li key={c.id} className="flex items-center gap-4 rounded-xl border border-border/60 p-3.5 transition hover:bg-muted/40">
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary-soft text-xs font-bold text-primary">#{idx + 1}</span>
+                <GradientAvatar initials={c.initials} ci={c.ci} size="md" />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-semibold">{c.name}</p>
+                  <p className="truncate text-xs text-muted-foreground">{c.role}</p>
+                </div>
+                <div className="hidden w-40 sm:block">
+                  <div className="mb-1 flex items-center justify-between text-xs">
+                    <span className="text-muted-foreground">Match</span>
+                    <span className="font-semibold tabular-nums">{c.aiScore}%</span>
+                  </div>
+                  <Progress value={c.aiScore} className="h-1.5" />
+                </div>
+                <StatusBadge status={c.status} />
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="card-elevated overflow-hidden">
+          <div className="border-b border-border bg-gradient-to-br from-primary-soft via-accent to-transparent px-5 py-4">
+            <div className="flex items-center gap-2.5">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl gradient-primary text-white">
+                <Lightbulb className="h-4.5 w-4.5" />
+              </div>
+              <div>
+                <h3 className="font-display text-base font-bold">Weekly Summary</h3>
+                <p className="text-xs text-muted-foreground">Generated by SmartHire AI</p>
+              </div>
+            </div>
+          </div>
+          <div className="space-y-3 p-5 text-sm leading-relaxed text-foreground/90">
+            <p>Your pipeline is <span className="font-semibold text-emerald-600">healthy</span> with 247 active applications spread evenly across 5 open roles.</p>
+            <p>Focus this week on the <span className="font-semibold">Senior React Developer</span> role — 3 candidates scored above 90% match.</p>
+            <p>Interview-to-offer conversion is <span className="font-semibold">37%</span>, up from 29% last month.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
